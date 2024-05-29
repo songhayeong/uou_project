@@ -16,6 +16,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
     });
 
     state = LoginState.success(result);
+    print(result);
   }
 }
 

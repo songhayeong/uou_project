@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:detail_location_detector/domain/auth/entity/user.dart';
 import 'package:detail_location_detector/domain/location/entity/location.dart';
+import 'package:detail_location_detector/pages/search/search_page.dart';
 import 'package:detail_location_detector/service/firestore_service.dart';
 import 'package:detail_location_detector/service/stream_location_service.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class LocationPage extends StatefulWidget {
 
 class _LocationPageState extends State<LocationPage> {
   final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  Completer<GoogleMapController>();
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(129.3113596, 35.5383773),
@@ -32,14 +33,14 @@ class _LocationPageState extends State<LocationPage> {
     super.initState();
     locationStreamSubscription =
         StreamLocationService.onLocatinoChanged?.listen(
-      (position) async {
-        await FirestoreService.updateUserLocation(
-          '0whpRDBFE6p3mkEyhvXR',
-          LatLng(position.latitude, position.longitude),
-          // 하드코딩된 uid이지만, 인증 서비스를 사용할 때 연결된 사용자의 uid이다.
+              (position) async {
+            await FirestoreService.updateUserLocation(
+              '0whpRDBFE6p3mkEyhvXR',
+              LatLng(position.latitude, position.longitude),
+              // 하드코딩된 uid이지만, 인증 서비스를 사용할 때 연결된 사용자의 uid이다.
+            );
+          },
         );
-      },
-    );
   }
 
   @override
@@ -54,6 +55,24 @@ class _LocationPageState extends State<LocationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('naver map'),
+        leading: GestureDetector(
+          onTap: () {
+            MaterialPageRoute(builder: (context) => const SearchPage());
+          },
+          child: const Icon(Icons.search),
+        ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context)
+              =>
+              const SearchPage()
+              ));
+            },
+            child: Icon(Icons.search),
+          ),
+        ],
       ),
       body: StreamBuilder<List<User>>(
         stream: FirestoreService.userCollectionStream(),
@@ -72,9 +91,9 @@ class _LocationPageState extends State<LocationPage> {
                 markerId: MarkerId('${user.name} position $i'),
                 icon: user.name == 'hayeong'
                     ? BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueRed)
+                    BitmapDescriptor.hueRed)
                     : BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueYellow),
+                    BitmapDescriptor.hueYellow),
                 position: LatLng(user.location.lat, user.location.lng),
                 onTap: () => {},
               ),

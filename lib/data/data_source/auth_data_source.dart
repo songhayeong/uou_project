@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:detail_location_detector/di/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
@@ -15,6 +16,22 @@ class AuthDataSource {
 
     final User? user = userCredential.user;
     if (user != null) {
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      DocumentReference documentReference = firestore.collection('users').doc(user.uid);
+
+      Map<String, dynamic> userData = {
+        'uid':user.uid,
+        'name': name,
+        'email':user.email,
+        'status': 'Unavailable',
+        'friends': {},
+        'current_sensor_data': {}
+      };
+
+      documentReference.set(userData);
+
       await user.updateDisplayName(name);
       await user.reload();
       User? updateUser = _firebaseService.auth.currentUser;
