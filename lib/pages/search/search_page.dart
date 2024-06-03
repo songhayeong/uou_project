@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:detail_location_detector/di/firebase_service.dart';
+import 'package:detail_location_detector/pages/group/add_member.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver{
+class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver {
   Map<String, dynamic>? userMap;
   bool isLoading = false;
   final TextEditingController _search = TextEditingController();
@@ -25,9 +26,9 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver{
     setStatus("Online");
   }
 
-  void setStatus (String status) async {
+  void setStatus(String status) async {
     await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
-      "status" : status,
+      "status": status,
     });
   }
 
@@ -48,7 +49,7 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver{
 
     await _firestore
         .collection('users')
-        .where('email', isEqualTo: _search.text)
+        .where('name', isEqualTo: _search.text)
         .get()
         .then((value) {
       setState(() {
@@ -66,6 +67,17 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver{
     return Scaffold(
       appBar: AppBar(
         title: const Text("검색"),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddMembersInGroup()),
+              );
+            },
+            child: Icon(Icons.group_add),
+          ),
+        ],
       ),
       body: isLoading
           ? Center(
@@ -117,10 +129,9 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver{
                         title: Text(
                           userMap!['name'],
                           style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500
-                          ),
+                              color: Colors.black,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500),
                         ),
                         subtitle: Text(userMap!['email']),
                         trailing: Icon(
@@ -133,5 +144,4 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver{
             ),
     );
   }
-
 }

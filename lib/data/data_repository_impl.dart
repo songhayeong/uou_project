@@ -89,6 +89,18 @@ class DataRepositoryImpl implements DataRepository {
     return atmosPressure;
   });
 
+  @override
+  Future<Result<SensorData>?> getCurrentSensorData() {
+    // TODO: implement getCurrentSensorData
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<Location>?> getLocation() {
+    // TODO: implement getLocation
+    throw UnimplementedError();
+  }
+
   // @override
   // Future<Result<SensorData>?> getCurrentSensorData() {
   //   // TODO: implement getCurrentSensorData

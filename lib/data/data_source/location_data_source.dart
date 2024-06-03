@@ -20,6 +20,6 @@ class LocationDataSource {
       desiredAccuracy: LocationAccuracy.high,
     );
 
-    return Location(lat: position.latitude, lng: position.longitude);
+    return Location(lat: position.latitude, lng: position.longitude, altitude: position.altitude);
   }
 }

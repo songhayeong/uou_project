@@ -39,6 +39,43 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
         });
       });
     });
+
+    await _firestore
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .collection('location')
+        .doc('current_location')
+        .get()
+        .then((map) {
+          setState(() {
+            membersList.add({
+              "location":map['location'],
+              "longitude":map['longitude'],
+              "altitude":map['altitude'],
+            });
+          });
+    });
+
+    await _firestore
+        .collection('users')
+        .doc(userMap!['uid'])
+        .collection('sensor_data')
+        .doc('current_data')
+        .get()
+        .then((map) {
+          setState(() {
+            membersList.add({
+              "atmos_pressure":map['atmos_pressure'],
+              'cell_tpwer_value':map['cell_tower_value'],
+              'lux':map['lux'],
+              'mag_x':map['mag_x'],
+              'mag_y':map['mag_y'],
+              'mag_z':map['mag_z'],
+              'wifi_rssi':map['wifi_rssi']
+            });
+          });
+    });
+
   }
 
   void onSearch() async {
@@ -48,15 +85,38 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
 
     await _firestore
         .collection('users')
-        .where("email", isEqualTo: _search.text)
+        .where("name", isEqualTo: _search.text)
         .get()
         .then((value) {
       setState(() {
         userMap = value.docs[0].data();
+        print(userMap);
         isLoading = false;
       });
       print(userMap);
     });
+
+    await _firestore
+      .collection('users')
+      .doc(userMap!['uid'])
+      .collection('location')
+      .doc('current_location')
+      .get()
+      .then((value) {
+        userMap!.addAll(value.data()!);
+    });
+
+    await _firestore
+      .collection('users')
+      .doc(userMap!['uid'])
+      .collection('sensor_data')
+      .doc('current_data')
+      .get()
+      .then((value) {
+       userMap!.addAll(value.data()!);
+    });
+
+    print(userMap);
   }
 
   void onResultTap() {
@@ -75,6 +135,16 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
           "email": userMap!['email'],
           "uid": userMap!['uid'],
           "isAdmin": false,
+          'altitude': userMap!['altitude'],
+          'latitude': userMap!['latitude'],
+          'longitude': userMap!['longitude'],
+          'atmos_pressure': userMap!['atmos_pressure'],
+          'cell_tower_value': userMap!['cell_tower_value'],
+          'lux': userMap!['lux'],
+          'mag_x': userMap!['mag_x'],
+          'mag_y': userMap!['mag_y'],
+          'mag_z': userMap!['mag_z'],
+          'wifi_rssi': userMap!['wifi_rssi']
         });
 
         userMap = null;
@@ -96,7 +166,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Members"),
+        title: const Text("Add Members"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -106,14 +176,14 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
               child: ListView.builder(
                 itemCount: membersList.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () => onRemoveMembers(index),
-                    leading: Icon(Icons.account_circle),
+                    leading: const Icon(Icons.account_circle),
                     title: Text(membersList[index]['name']),
                     subtitle: Text(membersList[index]['email']),
-                    trailing: Icon(Icons.close),
+                    trailing: const Icon(Icons.close),
                   );
                 },
               ),
@@ -144,38 +214,38 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
             ),
             isLoading
                 ? Container(
-              height: size.height / 12,
-              width: size.height / 12,
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(),
-            )
+                    height: size.height / 12,
+                    width: size.height / 12,
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  )
                 : ElevatedButton(
-              onPressed: onSearch,
-              child: Text("Search"),
-            ),
+                    onPressed: onSearch,
+                    child: Text("Search"),
+                  ),
             userMap != null
                 ? ListTile(
-              onTap: onResultTap,
-              leading: Icon(Icons.account_box),
-              title: Text(userMap!['name']),
-              subtitle: Text(userMap!['email']),
-              trailing: Icon(Icons.add),
-            )
+                    onTap: onResultTap,
+                    leading: Icon(Icons.account_box),
+                    title: Text(userMap!['name']),
+                    subtitle: Text(userMap!['email']),
+                    trailing: Icon(Icons.add),
+                  )
                 : SizedBox(),
           ],
         ),
       ),
       floatingActionButton: membersList.length >= 2
           ? FloatingActionButton(
-        child: Icon(Icons.forward),
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => CreateGroup(
-              membersList: membersList,
-            ),
-          ),
-        ),
-      )
+              child: Icon(Icons.forward),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => CreateGroup(
+                    membersList: membersList,
+                  ),
+                ),
+              ),
+            )
           : SizedBox(),
     );
   }

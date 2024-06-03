@@ -1,4 +1,5 @@
 import 'package:detail_location_detector/pages/location/location_page.dart';
+import 'package:detail_location_detector/pages/search/search_page.dart';
 import 'package:detail_location_detector/pages/user/login/provider/login_provider.dart';
 import 'package:detail_location_detector/pages/user/login/provider/login_validator_provider.dart';
 import 'package:detail_location_detector/pages/user/register/register_page.dart';
@@ -23,7 +24,7 @@ class LoginPage extends ConsumerWidget {
     ref.listen<LoginState>(loginNotifierProvider, (_, loginState) {
       if (loginState.userProfile != null) {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const LocationPage()));
+            MaterialPageRoute(builder: (context) => const SearchPage()));
       } else if (loginState.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(loginState.errorMessage!)),
@@ -84,7 +85,7 @@ class LoginPage extends ConsumerWidget {
                     MaterialPageRoute(
                         builder: (context) => const RegisterPage()));
               },
-              child: const Text('허ㅣ원가입'),
+              child: const Text('회원가입'),
             ),
           ],
         ),

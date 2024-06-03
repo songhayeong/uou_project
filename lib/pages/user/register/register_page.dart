@@ -4,7 +4,6 @@ import 'package:detail_location_detector/pages/widget/flat_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
 
@@ -50,11 +49,10 @@ class RegisterPage extends ConsumerWidget {
               height: 20,
             ),
             TextField(
-              onChanged: registerFormNotifier.passwordChanged,
-              obscureText: true,
+              onChanged: registerFormNotifier.nameChanged,
               decoration: const InputDecoration(
-                labelText: '패스워드',
-                hintText: '패스워드를 입력하세요',
+                labelText: '이름',
+                hintText: '이름을 입력하세요',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -62,11 +60,11 @@ class RegisterPage extends ConsumerWidget {
               height: 20,
             ),
             TextField(
-              onChanged: registerFormNotifier.nameChanged,
+              onChanged: registerFormNotifier.passwordChanged,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: '이름',
-                hintText: '이름을 입력하세요',
+                labelText: '패스워드',
+                hintText: '패스워드를 입력하세요',
                 border: OutlineInputBorder(),
               ),
             ),
